@@ -10,12 +10,15 @@ app.use(express.json());
 
 
 // ==================================================
-// ✅ SERVE FRONTEND (ADMIN PANEL)
+// ✅ SERVE FRONTEND (admin.html)
 // ==================================================
 
+/*
+   Serves admin.html + any static files
+   Works locally and on Render
+*/
 app.use(express.static(__dirname));
 
-// open http://localhost:3000 OR render url
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "admin.html"));
 });
@@ -26,18 +29,31 @@ app.get("/admin.html", (req, res) => {
 
 
 // ==================================================
-// ✅ HEALTH CHECK (IMPORTANT FOR RENDER)
+// ✅ HEALTH CHECK (REQUIRED FOR RENDER)
 // ==================================================
-app.get("/health", (req, res) => {
+
+/*
+   Render pings this to know server is alive
+*/
+app.get("/healthz", (req, res) => {
   res.send("OK");
 });
 
 
 // ==================================================
-// ✅ GOOGLE AUTH
+// ✅ GOOGLE AUTH (WORKS LOCAL + RENDER)
 // ==================================================
+
+/*
+   IMPORTANT:
+   Local  → ./service-account.json
+   Render → /etc/secrets/service-account.json
+*/
+
 const auth = new google.auth.GoogleAuth({
-  keyFile: "service-account.json",
+  keyFile: process.env.RENDER
+    ? "/etc/secrets/service-account.json"
+    : "service-account.json",
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
 
@@ -46,8 +62,9 @@ const SHEET_NAME = "Sheet1";
 
 
 // ==================================================
-// ✅ USERS
+// ✅ LOGIN USERS
 // ==================================================
+
 const USERS = {
   council1: "1234",
   council2: "abcd"
@@ -57,6 +74,7 @@ const USERS = {
 // ==================================================
 // ✅ LOGIN API
 // ==================================================
+
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -71,6 +89,7 @@ app.post("/login", (req, res) => {
 // ==================================================
 // ✅ FETCH TEAM DATA
 // ==================================================
+
 app.get("/team/:teamNo", async (req, res) => {
   try {
     const client = await auth.getClient();
@@ -83,6 +102,7 @@ app.get("/team/:teamNo", async (req, res) => {
 
     const rows = response.data.values || [];
 
+    // skip header row
     const team = rows.slice(1).find(r => r[0] == req.params.teamNo);
 
     res.json(team || []);
@@ -97,6 +117,7 @@ app.get("/team/:teamNo", async (req, res) => {
 // ==================================================
 // ✅ UPDATE TEAM DATA
 // ==================================================
+
 app.post("/updateTeam", async (req, res) => {
   try {
     const { rowIndex, rowData } = req.body;
@@ -121,8 +142,13 @@ app.post("/updateTeam", async (req, res) => {
 
 
 // ==================================================
-// ✅ START SERVER (IMPORTANT FIX FOR RENDER)
+// ✅ START SERVER (PORT FIX FOR RENDER)
 // ==================================================
+
+/*
+   Render provides dynamic PORT
+   Local uses 3000
+*/
 
 const PORT = process.env.PORT || 3000;
 
