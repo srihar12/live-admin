@@ -13,18 +13,24 @@ app.use(express.json());
 // ✅ SERVE FRONTEND (ADMIN PANEL)
 // ==================================================
 
-// open http://localhost:3000
+app.use(express.static(__dirname));
+
+// open http://localhost:3000 OR render url
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "admin.html"));
 });
 
-// also allow /admin.html
 app.get("/admin.html", (req, res) => {
   res.sendFile(path.join(__dirname, "admin.html"));
 });
 
-// serve any static files if needed later
-app.use(express.static(__dirname));
+
+// ==================================================
+// ✅ HEALTH CHECK (IMPORTANT FOR RENDER)
+// ==================================================
+app.get("/health", (req, res) => {
+  res.send("OK");
+});
 
 
 // ==================================================
@@ -72,18 +78,17 @@ app.get("/team/:teamNo", async (req, res) => {
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: `${SHEET_NAME}!A:I`, // only required columns
+      range: `${SHEET_NAME}!A:I`,
     });
 
     const rows = response.data.values || [];
 
-    // skip header row
     const team = rows.slice(1).find(r => r[0] == req.params.teamNo);
 
     res.json(team || []);
 
   } catch (err) {
-    console.error("❌ FETCH ERROR:", err.message);
+    console.error("❌ FETCH ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -109,16 +114,19 @@ app.post("/updateTeam", async (req, res) => {
     res.json({ success: true });
 
   } catch (err) {
-    console.error("❌ UPDATE ERROR:", err.message);
+    console.error("❌ UPDATE ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
 
 // ==================================================
-// ✅ START SERVER
+// ✅ START SERVER (IMPORTANT FIX FOR RENDER)
 // ==================================================
-app.listen(3000, () => {
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
   console.log("\n🚀 Server Started Successfully");
-  console.log("👉 Open in browser: http://localhost:3000\n");
+  console.log(`👉 Running on port ${PORT}\n`);
 });
