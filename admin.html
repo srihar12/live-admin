@@ -87,7 +87,10 @@
 
 
 <script>
-const API = "http://localhost:3000";
+
+/* ✅ THIS FIXES RENDER + LOCAL BOTH */
+const API = window.location.origin;
+
 let currentRow = null;
 
 
@@ -118,6 +121,11 @@ async function login() {
 async function loadTeam(){
 
   const teamNo = document.getElementById("teamNoInput").value;
+
+  if(!teamNo){
+    alert("Enter team number");
+    return;
+  }
 
   const res = await fetch(API + "/team/" + teamNo);
   const teamData = await res.json();
@@ -218,6 +226,7 @@ async function save(){
 
   alert("Saved to Google Sheet ✅");
 }
+
 </script>
 
 </body>
