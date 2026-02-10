@@ -1,212 +1,574 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>🏸 Admin Panel</title>
-
+  <title>🏸 Badminton Tournament Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
       padding: 20px;
-      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    input, select {
-      padding: 6px;
-      margin: 4px 0;
+    .container {
       width: 100%;
+      max-width: 500px;
     }
 
-    button {
-      padding: 6px 12px;
-      cursor: pointer;
-      margin-top: 6px;
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
     }
 
-    .box {
+    .header h1 {
+      font-size: 2em;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: 0.95em;
+    }
+
+    .card {
       background: white;
-      padding: 15px;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
       margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 0.9em;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
       border-radius: 8px;
-      width: 300px;
+      font-size: 1em;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      margin-top: 10px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .team-info {
+      background: #f8f9ff;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    .team-info h3 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 1.1em;
+    }
+
+    .player-row {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+      color: #555;
+    }
+
+    .player-row .icon {
+      margin-right: 10px;
+      font-size: 1.2em;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+      margin-top: 5px;
+    }
+
+    .status-not-scheduled {
+      background: #ffeaa7;
+      color: #d63031;
+    }
+
+    .status-scheduled {
+      background: #81ecec;
+      color: #00b894;
+    }
+
+    .status-completed {
+      background: #dfe6e9;
+      color: #2d3436;
+    }
+
+    .divider {
+      height: 1px;
+      background: #e0e0e0;
+      margin: 25px 0;
+    }
+
+    .collapsible-section {
+      margin-top: 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .collapsible-section.active {
+      border-color: #667eea;
+    }
+
+    .section-header {
+      background: #f8f9fa;
+      padding: 12px 16px;
+      font-weight: 600;
+      color: #555;
+      display: flex;
+      align-items: center;
+    }
+
+    .section-header.active {
+      background: #667eea;
+      color: white;
+    }
+
+    .section-content {
+      padding: 16px;
+      display: none;
+    }
+
+    .section-content.active {
+      display: block;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .success-message {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .input-icon {
+      position: relative;
+    }
+
+    .input-icon input {
+      padding-left: 40px;
+    }
+
+    .input-icon::before {
+      content: attr(data-icon);
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2em;
+    }
+
+    @media (max-width: 600px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      
+      .card {
+        padding: 20px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-<h2>🏸 Council Login</h2>
-
-<!-- LOGIN -->
-<div id="loginBox" class="box">
-  <input id="username" placeholder="Username"><br>
-  <input id="password" type="password" placeholder="Password"><br>
-  <button onclick="login()">Login</button>
-</div>
-
-
-<!-- PANEL -->
-<div id="panelBox" class="box" style="display:none">
-
-  <h3>Enter Team No</h3>
-  <input id="teamNoInput">
-  <button onclick="loadTeam()">Fetch</button>
-
-  <div id="formBox" style="display:none">
-
-    <p>P1: <span id="p1"></span></p>
-    <p>P2: <span id="p2"></span></p>
-
-    <label>Status:</label>
-    <select id="statusSelect" onchange="toggleFields()">
-      <option>Not Scheduled</option>
-      <option>Scheduled</option>
-      <option>Completed - Not Scheduled Next Round</option>
-      <option>Completed - Scheduled Next Round</option>
-    </select>
-
-    <!-- Scheduled -->
-    <div id="scheduleBox" style="display:none">
-      Opponent <input id="oppInput"><br>
-      Court <input id="courtInput"><br>
-      Time <input id="timeInput"><br>
-    </div>
-
-    <!-- Completed -->
-    <div id="resultBox" style="display:none">
-      Score <input id="scoreInput"><br>
-      Result
-      <select id="resultSelect">
-        <option>Win</option>
-        <option>Lost</option>
-      </select>
-    </div>
-
-    <button onclick="save()">Save</button>
+<div class="container">
+  
+  <div class="header">
+    <h1>🏸 Tournament Admin</h1>
+    <p>Council Management Panel</p>
   </div>
-</div>
 
+  <!-- LOGIN CARD -->
+  <div id="loginCard" class="card">
+    <h2 style="margin-bottom: 25px; color: #333;">Council Login</h2>
+    
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input id="username" type="text" placeholder="Enter your username">
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="Enter your password">
+    </div>
+
+    <button class="btn btn-primary" onclick="login()">Login to Panel</button>
+    
+    <button class="btn btn-secondary" onclick="testMode()" style="margin-top: 10px;">
+      🔧 Test Mode (Skip Login)
+    </button>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div id="adminPanel" class="hidden">
+    
+    <!-- Team Search Card -->
+    <div class="card">
+      <h2 style="margin-bottom: 20px; color: #333;">Find Team</h2>
+      
+      <div class="form-group">
+        <label for="teamNoInput">Team Number</label>
+        <input id="teamNoInput" type="number" placeholder="Enter team number (e.g., 1, 2, 3...)">
+      </div>
+
+      <button class="btn btn-primary" onclick="loadTeam()">🔍 Fetch Team Details</button>
+    </div>
+
+    <!-- Team Details & Update Card -->
+    <div id="teamDetailsCard" class="card hidden">
+      
+      <!-- Team Info Display -->
+      <div class="team-info">
+        <h3>Team #<span id="displayTeamNo"></span></h3>
+        <div class="player-row">
+          <span class="icon">👤</span>
+          <strong>Player 1:</strong>&nbsp;<span id="p1Display"></span>
+        </div>
+        <div class="player-row">
+          <span class="icon">👤</span>
+          <strong>Player 2:</strong>&nbsp;<span id="p2Display"></span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Status Selection -->
+      <div class="form-group">
+        <label for="statusSelect">Update Status</label>
+        <select id="statusSelect" onchange="updateStatusUI()">
+          <option value="Not Scheduled">🔴 Not Scheduled</option>
+          <option value="Scheduled">🟢 Scheduled</option>
+          <option value="Completed - Not Scheduled Next Round">⚪ Completed - Not Scheduled Next Round</option>
+          <option value="Completed - Scheduled Next Round">🟡 Completed - Scheduled Next Round</option>
+        </select>
+      </div>
+
+      <!-- Schedule Section -->
+      <div id="scheduleSection" class="collapsible-section hidden">
+        <div class="section-header">
+          📅 Schedule Details
+        </div>
+        <div class="section-content active">
+          <div class="form-group">
+            <label for="oppInput">Opponent Team</label>
+            <input id="oppInput" type="text" placeholder="e.g., Team 5">
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="courtInput">Court</label>
+              <input id="courtInput" type="text" placeholder="e.g., Court 1">
+            </div>
+
+            <div class="form-group">
+              <label for="timeInput">Time</label>
+              <input id="timeInput" type="time">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result Section -->
+      <div id="resultSection" class="collapsible-section hidden">
+        <div class="section-header">
+          🏆 Match Result
+        </div>
+        <div class="section-content active">
+          <div class="form-group">
+            <label for="scoreInput">Score</label>
+            <input id="scoreInput" type="text" placeholder="e.g., 21-15, 21-18">
+          </div>
+
+          <div class="form-group">
+            <label for="resultSelect">Outcome</label>
+            <select id="resultSelect">
+              <option value="Win">✅ Win</option>
+              <option value="Lost">❌ Lost</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="save()" style="margin-top: 25px;">
+        💾 Save to Google Sheet
+      </button>
+
+      <div id="successMessage" class="success-message">
+        ✓ Team data saved successfully!
+      </div>
+    </div>
+
+  </div>
+
+</div>
 
 <script>
 
-/* ✅ THIS FIXES RENDER + LOCAL BOTH */
 const API = window.location.origin;
-
 let currentRow = null;
 
+// ---------------- TEST MODE ----------------
+function testMode() {
+  console.log("Entering test mode...");
+  document.getElementById("loginCard").classList.add("hidden");
+  document.getElementById("adminPanel").classList.remove("hidden");
+  alert("🔧 Test Mode Active - UI will work but won't save to backend");
+}
 
 // ---------------- LOGIN ----------------
 async function login() {
-
-  const username = document.getElementById("username").value;
+  const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value;
 
-  const res = await fetch(API + "/login", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ username, password })
-  });
+  if (!username || !password) {
+    alert("⚠️ Please enter both username and password");
+    return;
+  }
 
-  const data = await res.json();
+  try {
+    console.log("Attempting login with:", { username, API });
+    
+    const res = await fetch(API + "/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ username, password })
+    });
 
-  if(data.success){
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("panelBox").style.display = "block";
-  } else {
-    alert("Invalid login");
+    console.log("Response status:", res.status);
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    console.log("Response data:", data);
+
+    if (data.success) {
+      document.getElementById("loginCard").classList.add("hidden");
+      document.getElementById("adminPanel").classList.remove("hidden");
+    } else {
+      alert("❌ Invalid credentials. Please try again.");
+    }
+  } catch (error) {
+    console.error("Login error:", error);
+    alert("⚠️ Connection error: " + error.message);
   }
 }
-
 
 // ---------------- FETCH TEAM ----------------
-async function loadTeam(){
+async function loadTeam() {
+  const teamNo = document.getElementById("teamNoInput").value.trim();
 
-  const teamNo = document.getElementById("teamNoInput").value;
-
-  if(!teamNo){
-    alert("Enter team number");
+  if (!teamNo) {
+    alert("⚠️ Please enter a team number");
     return;
   }
 
-  const res = await fetch(API + "/team/" + teamNo);
-  const teamData = await res.json();
+  try {
+    const res = await fetch(API + "/team/" + teamNo);
+    
+    if (!res.ok) {
+      throw new Error("Backend not available");
+    }
+    
+    const teamData = await res.json();
 
-  if(!teamData.length){
-    alert("Team not found");
-    return;
+    if (!teamData.length) {
+      alert("❌ Team not found. Please check the team number.");
+      return;
+    }
+
+    // Store current row
+    currentRow = parseInt(teamNo) + 1;
+
+    // Display team info
+    document.getElementById("displayTeamNo").textContent = teamNo;
+    document.getElementById("p1Display").textContent = teamData[1] || "N/A";
+    document.getElementById("p2Display").textContent = teamData[2] || "N/A";
+
+    // Show team details card
+    document.getElementById("teamDetailsCard").classList.remove("hidden");
+    
+    // Reset form
+    document.getElementById("statusSelect").value = "Not Scheduled";
+    updateStatusUI();
+    
+    // Hide success message
+    document.getElementById("successMessage").style.display = "none";
+
+  } catch (error) {
+    console.error("Error loading team:", error);
+    
+    // Test mode fallback with mock data
+    if (confirm("⚠️ Backend not available. Use test data for Team " + teamNo + "?")) {
+      currentRow = parseInt(teamNo) + 1;
+      
+      // Mock data
+      document.getElementById("displayTeamNo").textContent = teamNo;
+      document.getElementById("p1Display").textContent = "Player " + (teamNo * 2 - 1);
+      document.getElementById("p2Display").textContent = "Player " + (teamNo * 2);
+      
+      document.getElementById("teamDetailsCard").classList.remove("hidden");
+      document.getElementById("statusSelect").value = "Not Scheduled";
+      updateStatusUI();
+      document.getElementById("successMessage").style.display = "none";
+    }
   }
-
-  document.getElementById("formBox").style.display = "block";
-
-  currentRow = parseInt(teamNo) + 1;
-
-  document.getElementById("p1").innerText = teamData[1];
-  document.getElementById("p2").innerText = teamData[2];
 }
 
-
-// ---------------- TOGGLE FIELDS ----------------
-function toggleFields(){
-
+// ---------------- UPDATE STATUS UI ----------------
+function updateStatusUI() {
   const status = document.getElementById("statusSelect").value;
+  
+  const scheduleSection = document.getElementById("scheduleSection");
+  const resultSection = document.getElementById("resultSection");
 
-  const scheduleBox = document.getElementById("scheduleBox");
-  const resultBox = document.getElementById("resultBox");
+  // Hide all sections first
+  scheduleSection.classList.add("hidden");
+  resultSection.classList.add("hidden");
 
-  scheduleBox.style.display = "none";
-  resultBox.style.display = "none";
-
-  if(status === "Scheduled"){
-    scheduleBox.style.display = "block";
-  }
-
-  if(status === "Completed - Not Scheduled Next Round"){
-    resultBox.style.display = "block";
-  }
-
-  if(status === "Completed - Scheduled Next Round"){
-    scheduleBox.style.display = "block";
-    resultBox.style.display = "block";
+  // Show relevant sections based on status
+  if (status === "Scheduled") {
+    scheduleSection.classList.remove("hidden");
+  } else if (status === "Completed - Not Scheduled Next Round") {
+    resultSection.classList.remove("hidden");
+  } else if (status === "Completed - Scheduled Next Round") {
+    scheduleSection.classList.remove("hidden");
+    resultSection.classList.remove("hidden");
   }
 }
-
 
 // ---------------- SAVE ----------------
-async function save(){
-
+async function save() {
   const status = document.getElementById("statusSelect").value;
+  
+  let opponent = "", courtVal = "", timeVal = "", scoreVal = "", resultVal = "";
 
-  let opponent="", courtVal="", timeVal="", scoreVal="", resultVal="";
-
-  if(status === "Scheduled"){
-    opponent = document.getElementById("oppInput").value;
-    courtVal = document.getElementById("courtInput").value;
+  // Collect schedule data if applicable
+  if (status === "Scheduled" || status === "Completed - Scheduled Next Round") {
+    opponent = document.getElementById("oppInput").value.trim();
+    courtVal = document.getElementById("courtInput").value.trim();
     timeVal = document.getElementById("timeInput").value;
   }
 
-  if(status === "Completed - Not Scheduled Next Round"){
-    scoreVal = document.getElementById("scoreInput").value;
+  // Collect result data if applicable
+  if (status === "Completed - Not Scheduled Next Round" || status === "Completed - Scheduled Next Round") {
+    scoreVal = document.getElementById("scoreInput").value.trim();
     resultVal = document.getElementById("resultSelect").value;
   }
 
-  if(status === "Completed - Scheduled Next Round"){
-    opponent = document.getElementById("oppInput").value;
-    courtVal = document.getElementById("courtInput").value;
-    timeVal = document.getElementById("timeInput").value;
-    scoreVal = document.getElementById("scoreInput").value;
-    resultVal = document.getElementById("resultSelect").value;
-  }
-
-  // LOST → clear next match
-  if(resultVal === "Lost"){
-    opponent="";
-    courtVal="";
-    timeVal="";
+  // If team lost, clear next match details
+  if (resultVal === "Lost") {
+    opponent = "";
+    courtVal = "";
+    timeVal = "";
   }
 
   const row = [
     document.getElementById("teamNoInput").value,
-    document.getElementById("p1").innerText,
-    document.getElementById("p2").innerText,
+    document.getElementById("p1Display").textContent,
+    document.getElementById("p2Display").textContent,
     status,
     opponent,
     courtVal,
@@ -215,17 +577,42 @@ async function save(){
     resultVal
   ];
 
-  await fetch(API + "/updateTeam", {
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({
-      rowIndex: currentRow,
-      rowData: row
-    })
-  });
+  try {
+    await fetch(API + "/updateTeam", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        rowIndex: currentRow,
+        rowData: row
+      })
+    });
 
-  alert("Saved to Google Sheet ✅");
+    // Show success message
+    const successMsg = document.getElementById("successMessage");
+    successMsg.style.display = "block";
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+      successMsg.style.display = "none";
+    }, 3000);
+
+  } catch (error) {
+    alert("⚠️ Error saving data. Please try again.");
+  }
 }
+
+// Allow Enter key to submit login
+document.getElementById("password")?.addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    login();
+  }
+});
+
+document.getElementById("teamNoInput")?.addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    loadTeam();
+  }
+});
 
 </script>
 
