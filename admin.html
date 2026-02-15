@@ -1,234 +1,436 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>🏸 Badminton Tournament Admin</title>
+  <meta charset="UTF-8">
+  <title>Tournament Administration Panel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
   <style>
+    :root {
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --primary-dark: #4f46e5;
+      --primary-glow: rgba(99, 102, 241, 0.2);
+      --secondary: #ec4899;
+      --accent: #06b6d4;
+      --bg-main: #f8fafc;
+      --card-bg: rgba(255, 255, 255, 0.7);
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --success: #10b981;
+      --error: #ef4444;
+      --glass-border: rgba(255, 255, 255, 0.5);
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.12);
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-main);
       min-height: 100vh;
-      padding: 20px;
+      color: var(--text-main);
+      overflow-x: hidden;
       display: flex;
       justify-content: center;
-      align-items: center;
+      padding: 40px 20px;
+    }
+
+    /* Mesh Gradient Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.1) 0, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.1) 0, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(139, 92, 246, 0.1) 0, transparent 50%);
+      z-index: -1;
+    }
+
+    .bg-blobs {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      filter: blur(80px);
+      opacity: 0.4;
+    }
+
+    .blob {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      animation: float 20s infinite alternate ease-in-out;
+    }
+
+    .blob-1 {
+      background: rgba(99, 102, 241, 0.2);
+      top: -10%;
+      left: -5%;
+    }
+
+    .blob-2 {
+      background: rgba(236, 72, 153, 0.15);
+      bottom: -10%;
+      right: -5%;
+      animation-delay: -5s;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      100% {
+        transform: translate(100px, 50px) scale(1.2);
+      }
+    }
+
+    /* Page Transitions */
+    .view-container {
+      width: 100%;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .view-container.v-hide {
+      opacity: 0;
+      transform: scale(0.96) translateY(20px);
+      pointer-events: none;
+      position: absolute;
     }
 
     .container {
       width: 100%;
-      max-width: 500px;
+      max-width: 600px;
+      position: relative;
     }
 
     .header {
       text-align: center;
-      color: white;
-      margin-bottom: 30px;
+      margin-bottom: 60px;
     }
 
     .header h1 {
-      font-size: 2em;
-      margin-bottom: 5px;
+      font-size: 3.5rem;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.05));
     }
 
     .header p {
-      opacity: 0.9;
-      font-size: 0.95em;
+      color: var(--text-muted);
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
     }
 
+    /* Antigravity Cards */
     .card {
-      background: white;
-      border-radius: 16px;
-      padding: 30px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      margin-bottom: 20px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 36px;
+      padding: 48px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-lg),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+      position: relative;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+      opacity: 0.6;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.15);
+      border-color: #fff;
+    }
+
+    h2 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      margin-bottom: 40px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    h2::before {
+      content: '';
+      width: 6px;
+      height: 28px;
+      background: var(--primary);
+      border-radius: 4px;
     }
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 32px;
     }
 
     .form-group label {
       display: block;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 8px;
-      font-size: 0.9em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
     }
 
     .form-group input,
     .form-group select {
       width: 100%;
-      padding: 12px 16px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 1em;
-      transition: all 0.3s;
+      padding: 18px 24px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      color: var(--text-main);
+      font-size: 1rem;
       font-family: inherit;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-sm);
     }
 
     .form-group input:focus,
     .form-group select:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
     }
 
+    /* Buttons */
     .btn {
       width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1em;
-      font-weight: 600;
+      padding: 20px;
+      border-radius: 20px;
+      font-size: 1.1rem;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       font-family: inherit;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      border: none;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       color: white;
-      margin-top: 10px;
+      box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.3);
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 20px 30px -8px rgba(99, 102, 241, 0.4);
+      filter: brightness(1.05);
     }
 
     .btn-primary:active {
-      transform: translateY(0);
+      transform: translateY(1px) scale(0.98);
     }
 
     .btn-secondary {
-      background: #f0f0f0;
-      color: #333;
-      margin-top: 10px;
+      background: #ffffff;
+      color: var(--text-main);
+      border: 1px solid #e2e8f0;
+      margin-top: 16px;
+      box-shadow: var(--shadow-sm);
     }
 
     .btn-secondary:hover {
-      background: #e0e0e0;
+      background: #f1f5f9;
+      transform: translateY(-2px);
     }
 
+    /* Team Info */
     .team-info {
-      background: #f8f9ff;
-      border-left: 4px solid #667eea;
-      padding: 15px;
-      border-radius: 8px;
-      margin: 20px 0;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 28px;
+      padding: 32px;
+      margin: 40px 0;
+      box-shadow: var(--shadow-md);
     }
 
     .team-info h3 {
-      color: #667eea;
-      margin-bottom: 10px;
-      font-size: 1.1em;
+      color: var(--primary);
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .player-row {
       display: flex;
-      align-items: center;
-      margin: 8px 0;
-      color: #555;
+      justify-content: space-between;
+      margin: 16px 0;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f1f5f9;
     }
 
-    .player-row .icon {
-      margin-right: 10px;
-      font-size: 1.2em;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.85em;
+    .player-row strong {
+      color: var(--text-muted);
       font-weight: 600;
-      margin-top: 5px;
     }
 
-    .status-not-scheduled {
-      background: #ffeaa7;
-      color: #d63031;
+    /* Loading Overlay */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
     }
 
-    .status-scheduled {
-      background: #81ecec;
-      color: #00b894;
+    .loading-overlay.active {
+      display: flex;
+      animation: fadeIn 0.4s ease;
     }
 
-    .status-completed {
-      background: #dfe6e9;
-      color: #2d3436;
+    .spinner {
+      width: 64px;
+      height: 64px;
+      border: 4px solid #f1f5f9;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s infinite cubic-bezier(0.5, 0, 0.5, 1);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
     }
 
     .divider {
       height: 1px;
-      background: #e0e0e0;
-      margin: 25px 0;
+      background: #e2e8f0;
+      margin: 40px 0;
     }
 
     .collapsible-section {
-      margin-top: 20px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
+      margin-top: 32px;
+      border: 1px solid #e2e8f0;
+      border-radius: 28px;
       overflow: hidden;
-    }
-
-    .collapsible-section.active {
-      border-color: #667eea;
+      background: #ffffff;
+      box-shadow: var(--shadow-sm);
     }
 
     .section-header {
-      background: #f8f9fa;
-      padding: 12px 16px;
-      font-weight: 600;
-      color: #555;
+      padding: 24px 32px;
+      font-weight: 700;
       display: flex;
       align-items: center;
-    }
-
-    .section-header.active {
-      background: #667eea;
-      color: white;
+      gap: 12px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      color: var(--text-main);
     }
 
     .section-content {
-      padding: 16px;
+      padding: 32px;
       display: none;
     }
 
     .section-content.active {
       display: block;
+      animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 15px;
+      gap: 24px;
     }
 
     .success-message {
-      background: #d4edda;
-      border: 1px solid #c3e6cb;
-      color: #155724;
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 15px;
+      background: #ecfdf5;
+      border: 1px solid #10b981;
+      color: #047857;
+      padding: 20px;
+      border-radius: 24px;
+      margin-top: 32px;
       display: none;
-      animation: slideDown 0.3s ease;
+      text-align: center;
+      font-weight: 700;
+      animation: slideDown 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     @keyframes slideDown {
       from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-20px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -236,33 +438,20 @@
     }
 
     .hidden {
-      display: none;
-    }
-
-    .input-icon {
-      position: relative;
-    }
-
-    .input-icon input {
-      padding-left: 40px;
-    }
-
-    .input-icon::before {
-      content: attr(data-icon);
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.2em;
+      display: none !important;
     }
 
     @media (max-width: 600px) {
+      .header h1 {
+        font-size: 2.75rem;
+      }
+
+      .card {
+        padding: 32px 24px;
+      }
+
       .grid-2 {
         grid-template-columns: 1fr;
-      }
-      
-      .card {
-        padding: 20px;
       }
     }
   </style>
@@ -270,351 +459,372 @@
 
 <body>
 
-<div class="container">
-  
-  <div class="header">
-    <h1>🏸 Tournament Admin</h1>
-    <p>Council Management Panel</p>
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <p style="color: var(--primary); font-weight: 700; letter-spacing: 0.1em;">PROCESSING</p>
   </div>
 
-  <!-- LOGIN CARD -->
-  <div id="loginCard" class="card">
-    <h2 style="margin-bottom: 25px; color: #333;">Council Login</h2>
-    
-    <div class="form-group">
-      <label for="username">Username</label>
-      <input id="username" type="text" placeholder="Enter your username">
-    </div>
-
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input id="password" type="password" placeholder="Enter your password">
-    </div>
-
-    <button class="btn btn-primary" onclick="login()">Login to Panel</button>
-    
-    <button class="btn btn-secondary" onclick="testMode()" style="margin-top: 10px;">
-      🔧 Test Mode (Skip Login)
-    </button>
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
   </div>
 
-  <!-- ADMIN PANEL -->
-  <div id="adminPanel" class="hidden">
-    
-    <!-- Team Search Card -->
-    <div class="card">
-      <h2 style="margin-bottom: 20px; color: #333;">Find Team</h2>
-      
-      <div class="form-group">
-        <label for="teamNoInput">Team Number</label>
-        <input id="teamNoInput" type="number" placeholder="Enter team number (e.g., 1, 2, 3...)">
-      </div>
+  <div class="container">
 
-      <button class="btn btn-primary" onclick="loadTeam()">🔍 Fetch Team Details</button>
+    <div class="header">
+      <h1>Tournament Manager</h1>
+      <p>Council Administration Panel</p>
     </div>
 
-    <!-- Team Details & Update Card -->
-    <div id="teamDetailsCard" class="card hidden">
-      
-      <!-- Team Info Display -->
-      <div class="team-info">
-        <h3>Team #<span id="displayTeamNo"></span></h3>
-        <div class="player-row">
-          <span class="icon">👤</span>
-          <strong>Player 1:</strong>&nbsp;<span id="p1Display"></span>
+    <!-- LOGIN CARD -->
+    <div id="loginCard" class="view-container">
+      <div class="card">
+        <h2>Council Login</h2>
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input id="username" type="text" placeholder="Enter your username">
         </div>
-        <div class="player-row">
-          <span class="icon">👤</span>
-          <strong>Player 2:</strong>&nbsp;<span id="p2Display"></span>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="Enter your password">
         </div>
+
+        <button class="btn btn-primary" onclick="login()">
+          <span>Login to Panel</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+            <polyline points="10 17 15 12 10 7" />
+            <line x1="15" y1="12" x2="3" y2="12" />
+          </svg>
+        </button>
+
+        <button class="btn btn-secondary" onclick="testMode()">
+          Test Mode (Skip Login)
+        </button>
+      </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="adminPanel" class="view-container v-hide">
+
+      <!-- Team Search Card -->
+      <div class="card">
+        <h2>Find Team</h2>
+
+        <div class="form-group">
+          <label for="teamNoInput">Team Number</label>
+          <input id="teamNoInput" type="number" placeholder="Enter team number (e.g., 1, 2, 3...)">
+        </div>
+
+        <button class="btn btn-primary" onclick="loadTeam()">
+          <span>Fetch Team Details</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </button>
       </div>
 
-      <div class="divider"></div>
+      <!-- Team Details & Update Card -->
+      <div id="teamDetailsCard" class="card hidden">
 
-      <!-- Status Selection -->
-      <div class="form-group">
-        <label for="statusSelect">Update Status</label>
-        <select id="statusSelect" onchange="updateStatusUI()">
-          <option value="Not Scheduled">🔴 Not Scheduled</option>
-          <option value="Scheduled">🟢 Scheduled</option>
-          <option value="Completed - Not Scheduled Next Round">⚪ Completed - Not Scheduled Next Round</option>
-          <option value="Completed - Scheduled Next Round">🟡 Completed - Scheduled Next Round</option>
-        </select>
-      </div>
-
-      <!-- Schedule Section -->
-      <div id="scheduleSection" class="collapsible-section hidden">
-        <div class="section-header">
-          📅 Schedule Details
-        </div>
-        <div class="section-content active">
-          <div class="form-group">
-            <label for="oppInput">Opponent Team</label>
-            <input id="oppInput" type="text" placeholder="e.g., Team 5">
+        <!-- Team Info Display -->
+        <div class="team-info">
+          <h3>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            Team Number <span id="displayTeamNo"></span>
+          </h3>
+          <div class="player-row">
+            <strong>Player 1:</strong><span id="p1Display"></span>
           </div>
+          <div class="player-row">
+            <strong>Player 2:</strong><span id="p2Display"></span>
+          </div>
+        </div>
 
-          <div class="grid-2">
+        <div class="divider"></div>
+
+        <!-- Status Selection -->
+        <div class="form-group">
+          <label for="statusSelect">Update Status</label>
+          <select id="statusSelect" onchange="updateStatusUI()">
+            <option value="Not Scheduled">Not Scheduled</option>
+            <option value="Scheduled">Scheduled</option>
+            <option value="Completed - Not Scheduled Next Round">Completed - Not Scheduled Next Round</option>
+            <option value="Completed - Scheduled Next Round">Completed - Scheduled Next Round</option>
+          </select>
+        </div>
+
+        <!-- Schedule Section -->
+        <div id="scheduleSection" class="collapsible-section hidden">
+          <div class="section-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            Schedule Details
+          </div>
+          <div class="section-content active">
             <div class="form-group">
-              <label for="courtInput">Court</label>
-              <input id="courtInput" type="text" placeholder="e.g., Court 1">
+              <label for="oppInput">Opponent Team</label>
+              <input id="oppInput" type="text" placeholder="e.g., Team 5">
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="courtInput">Court</label>
+                <input id="courtInput" type="text" placeholder="e.g., Court 1">
+              </div>
+
+              <div class="form-group">
+                <label for="timeInput">Time</label>
+                <input id="timeInput" type="time">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultSection" class="collapsible-section hidden">
+          <div class="section-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="7" />
+              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+            </svg>
+            Match Result
+          </div>
+          <div class="section-content active">
+            <div class="form-group">
+              <label for="scoreInput">Score</label>
+              <input id="scoreInput" type="text" placeholder="e.g., 21-15, 21-18">
             </div>
 
             <div class="form-group">
-              <label for="timeInput">Time</label>
-              <input id="timeInput" type="time">
+              <label for="resultSelect">Outcome</label>
+              <select id="resultSelect">
+                <option value="Win">Win</option>
+                <option value="Lost">Lost</option>
+              </select>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Result Section -->
-      <div id="resultSection" class="collapsible-section hidden">
-        <div class="section-header">
-          🏆 Match Result
-        </div>
-        <div class="section-content active">
-          <div class="form-group">
-            <label for="scoreInput">Score</label>
-            <input id="scoreInput" type="text" placeholder="e.g., 21-15, 21-18">
-          </div>
+        <button class="btn btn-primary" onclick="save()" style="margin-top: 32px;">
+          <span>Save to Google Sheet</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+          </svg>
+        </button>
 
-          <div class="form-group">
-            <label for="resultSelect">Outcome</label>
-            <select id="resultSelect">
-              <option value="Win">✅ Win</option>
-              <option value="Lost">❌ Lost</option>
-            </select>
-          </div>
+        <div id="successMessage" class="success-message">
+          Team data saved successfully
         </div>
       </div>
 
-      <button class="btn btn-primary" onclick="save()" style="margin-top: 25px;">
-        💾 Save to Google Sheet
-      </button>
-
-      <div id="successMessage" class="success-message">
-        ✓ Team data saved successfully!
-      </div>
     </div>
 
   </div>
 
-</div>
+  <script>
 
-<script>
+    const API = window.location.origin;
+    let currentRow = null;
 
-const API = window.location.origin;
-let currentRow = null;
-
-// ---------------- TEST MODE ----------------
-function testMode() {
-  console.log("Entering test mode...");
-  document.getElementById("loginCard").classList.add("hidden");
-  document.getElementById("adminPanel").classList.remove("hidden");
-  alert("🔧 Test Mode Active - UI will work but won't save to backend");
-}
-
-// ---------------- LOGIN ----------------
-async function login() {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value;
-
-  if (!username || !password) {
-    alert("⚠️ Please enter both username and password");
-    return;
-  }
-
-  try {
-    console.log("Attempting login with:", { username, API });
-    
-    const res = await fetch(API + "/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ username, password })
-    });
-
-    console.log("Response status:", res.status);
-    
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
+    // ---------------- UI HELPERS ----------------
+    function showLoading() {
+      document.getElementById("loadingOverlay").classList.add("active");
     }
 
-    const data = await res.json();
-    console.log("Response data:", data);
-
-    if (data.success) {
-      document.getElementById("loginCard").classList.add("hidden");
-      document.getElementById("adminPanel").classList.remove("hidden");
-    } else {
-      alert("❌ Invalid credentials. Please try again.");
-    }
-  } catch (error) {
-    console.error("Login error:", error);
-    alert("⚠️ Connection error: " + error.message);
-  }
-}
-
-// ---------------- FETCH TEAM ----------------
-async function loadTeam() {
-  const teamNo = document.getElementById("teamNoInput").value.trim();
-
-  if (!teamNo) {
-    alert("⚠️ Please enter a team number");
-    return;
-  }
-
-  try {
-    const res = await fetch(API + "/team/" + teamNo);
-    
-    if (!res.ok) {
-      throw new Error("Backend not available");
-    }
-    
-    const teamData = await res.json();
-
-    if (!teamData.length) {
-      alert("❌ Team not found. Please check the team number.");
-      return;
+    function hideLoading() {
+      document.getElementById("loadingOverlay").classList.remove("active");
     }
 
-    // Store current row
-    currentRow = parseInt(teamNo) + 1;
+    function switchView(toId) {
+      const login = document.getElementById("loginCard");
+      const admin = document.getElementById("adminPanel");
 
-    // Display team info
-    document.getElementById("displayTeamNo").textContent = teamNo;
-    document.getElementById("p1Display").textContent = teamData[1] || "N/A";
-    document.getElementById("p2Display").textContent = teamData[2] || "N/A";
-
-    // Show team details card
-    document.getElementById("teamDetailsCard").classList.remove("hidden");
-    
-    // Reset form
-    document.getElementById("statusSelect").value = "Not Scheduled";
-    updateStatusUI();
-    
-    // Hide success message
-    document.getElementById("successMessage").style.display = "none";
-
-  } catch (error) {
-    console.error("Error loading team:", error);
-    
-    // Test mode fallback with mock data
-    if (confirm("⚠️ Backend not available. Use test data for Team " + teamNo + "?")) {
-      currentRow = parseInt(teamNo) + 1;
-      
-      // Mock data
-      document.getElementById("displayTeamNo").textContent = teamNo;
-      document.getElementById("p1Display").textContent = "Player " + (teamNo * 2 - 1);
-      document.getElementById("p2Display").textContent = "Player " + (teamNo * 2);
-      
-      document.getElementById("teamDetailsCard").classList.remove("hidden");
-      document.getElementById("statusSelect").value = "Not Scheduled";
-      updateStatusUI();
-      document.getElementById("successMessage").style.display = "none";
+      if (toId === "adminPanel") {
+        login.classList.add("v-hide");
+        setTimeout(() => {
+          login.classList.add("hidden");
+          admin.classList.remove("hidden");
+          setTimeout(() => admin.classList.remove("v-hide"), 50);
+        }, 500);
+      }
     }
-  }
-}
 
-// ---------------- UPDATE STATUS UI ----------------
-function updateStatusUI() {
-  const status = document.getElementById("statusSelect").value;
-  
-  const scheduleSection = document.getElementById("scheduleSection");
-  const resultSection = document.getElementById("resultSection");
+    // ---------------- TEST MODE ----------------
+    function testMode() {
+      showLoading();
+      setTimeout(() => {
+        hideLoading();
+        switchView("adminPanel");
+        alert("Test Mode Active - UI will work but won't save to backend");
+      }, 800);
+    }
 
-  // Hide all sections first
-  scheduleSection.classList.add("hidden");
-  resultSection.classList.add("hidden");
+    // ---------------- LOGIN ----------------
+    async function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
 
-  // Show relevant sections based on status
-  if (status === "Scheduled") {
-    scheduleSection.classList.remove("hidden");
-  } else if (status === "Completed - Not Scheduled Next Round") {
-    resultSection.classList.remove("hidden");
-  } else if (status === "Completed - Scheduled Next Round") {
-    scheduleSection.classList.remove("hidden");
-    resultSection.classList.remove("hidden");
-  }
-}
+      if (!username || !password) {
+        alert("Please enter both username and password");
+        return;
+      }
 
-// ---------------- SAVE ----------------
-async function save() {
-  const status = document.getElementById("statusSelect").value;
-  
-  let opponent = "", courtVal = "", timeVal = "", scoreVal = "", resultVal = "";
+      showLoading();
+      try {
+        const res = await fetch(API + "/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
 
-  // Collect schedule data if applicable
-  if (status === "Scheduled" || status === "Completed - Scheduled Next Round") {
-    opponent = document.getElementById("oppInput").value.trim();
-    courtVal = document.getElementById("courtInput").value.trim();
-    timeVal = document.getElementById("timeInput").value;
-  }
+        const data = await res.json();
+        if (data.success) {
+          switchView("adminPanel");
+        } else {
+          alert("Invalid credentials. Please try again.");
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        alert("Connection error: " + error.message);
+      } finally {
+        hideLoading();
+      }
+    }
 
-  // Collect result data if applicable
-  if (status === "Completed - Not Scheduled Next Round" || status === "Completed - Scheduled Next Round") {
-    scoreVal = document.getElementById("scoreInput").value.trim();
-    resultVal = document.getElementById("resultSelect").value;
-  }
+    // ---------------- FETCH TEAM ----------------
+    async function loadTeam() {
+      const teamNo = document.getElementById("teamNoInput").value.trim();
+      if (!teamNo) {
+        alert("Please enter a team number");
+        return;
+      }
 
-  // If team lost, clear next match details
-  if (resultVal === "Lost") {
-    opponent = "";
-    courtVal = "";
-    timeVal = "";
-  }
+      showLoading();
+      try {
+        const res = await fetch(API + "/team/" + teamNo);
+        if (!res.ok) throw new Error("Backend not available");
 
-  const row = [
-    document.getElementById("teamNoInput").value,
-    document.getElementById("p1Display").textContent,
-    document.getElementById("p2Display").textContent,
-    status,
-    opponent,
-    courtVal,
-    timeVal,
-    scoreVal,
-    resultVal
-  ];
+        const teamData = await res.json();
+        if (!teamData.length) {
+          alert("Team not found. Please check the team number.");
+          return;
+        }
 
-  try {
-    await fetch(API + "/updateTeam", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        rowIndex: currentRow,
-        rowData: row
-      })
-    });
+        currentRow = parseInt(teamNo) + 1;
+        document.getElementById("displayTeamNo").textContent = teamNo;
+        document.getElementById("p1Display").textContent = teamData[1] || "N/A";
+        document.getElementById("p2Display").textContent = teamData[2] || "N/A";
+        document.getElementById("teamDetailsCard").classList.remove("hidden");
+        document.getElementById("statusSelect").value = "Not Scheduled";
+        updateStatusUI();
+        document.getElementById("successMessage").style.display = "none";
+      } catch (error) {
+        // Test mode fallback
+        if (confirm("Backend not available. Use test data for Team " + teamNo + "?")) {
+          currentRow = parseInt(teamNo) + 1;
+          document.getElementById("displayTeamNo").textContent = teamNo;
+          document.getElementById("p1Display").textContent = "Player " + (teamNo * 2 - 1);
+          document.getElementById("p2Display").textContent = "Player " + (teamNo * 2);
+          document.getElementById("teamDetailsCard").classList.remove("hidden");
+          document.getElementById("statusSelect").value = "Not Scheduled";
+          updateStatusUI();
+          document.getElementById("successMessage").style.display = "none";
+        }
+      } finally {
+        hideLoading();
+      }
+    }
 
-    // Show success message
-    const successMsg = document.getElementById("successMessage");
-    successMsg.style.display = "block";
-    
-    // Hide after 3 seconds
-    setTimeout(() => {
-      successMsg.style.display = "none";
-    }, 3000);
+    // ---------------- UPDATE STATUS UI ----------------
+    function updateStatusUI() {
+      const status = document.getElementById("statusSelect").value;
+      const scheduleSection = document.getElementById("scheduleSection");
+      const resultSection = document.getElementById("resultSection");
 
-  } catch (error) {
-    alert("⚠️ Error saving data. Please try again.");
-  }
-}
+      scheduleSection.classList.add("hidden");
+      resultSection.classList.add("hidden");
 
-// Allow Enter key to submit login
-document.getElementById("password")?.addEventListener("keypress", function(e) {
-  if (e.key === "Enter") {
-    login();
-  }
-});
+      if (status === "Scheduled") {
+        scheduleSection.classList.remove("hidden");
+      } else if (status === "Completed - Not Scheduled Next Round") {
+        resultSection.classList.remove("hidden");
+      } else if (status === "Completed - Scheduled Next Round") {
+        scheduleSection.classList.remove("hidden");
+        resultSection.classList.remove("hidden");
+      }
+    }
 
-document.getElementById("teamNoInput")?.addEventListener("keypress", function(e) {
-  if (e.key === "Enter") {
-    loadTeam();
-  }
-});
+    // ---------------- SAVE ----------------
+    async function save() {
+      const status = document.getElementById("statusSelect").value;
+      let opponent = "", courtVal = "", timeVal = "", scoreVal = "", resultVal = "";
 
-</script>
+      if (status === "Scheduled" || status === "Completed - Scheduled Next Round") {
+        opponent = document.getElementById("oppInput").value.trim();
+        courtVal = document.getElementById("courtInput").value.trim();
+        timeVal = document.getElementById("timeInput").value;
+      }
+      if (status === "Completed - Not Scheduled Next Round" || status === "Completed - Scheduled Next Round") {
+        scoreVal = document.getElementById("scoreInput").value.trim();
+        resultVal = document.getElementById("resultSelect").value;
+      }
+      if (resultVal === "Lost") {
+        opponent = ""; courtVal = ""; timeVal = "";
+      }
+
+      const row = [
+        document.getElementById("teamNoInput").value,
+        document.getElementById("p1Display").textContent,
+        document.getElementById("p2Display").textContent,
+        status, opponent, courtVal, timeVal, scoreVal, resultVal
+      ];
+
+      showLoading();
+      try {
+        await fetch(API + "/updateTeam", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rowIndex: currentRow, rowData: row })
+        });
+
+        const successMsg = document.getElementById("successMessage");
+        successMsg.style.display = "block";
+        setTimeout(() => successMsg.style.display = "none", 3000);
+      } catch (error) {
+        alert("Error saving data. Please try again.");
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // Enter key listeners
+    document.getElementById("password")?.addEventListener("keypress", (e) => e.key === "Enter" && login());
+    document.getElementById("teamNoInput")?.addEventListener("keypress", (e) => e.key === "Enter" && loadTeam());
+
+  </script>
 
 </body>
+
 </html>
