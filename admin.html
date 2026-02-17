@@ -47,7 +47,6 @@
       padding: 40px 20px;
     }
 
-    /* Mesh Gradient Background */
     body::before {
       content: '';
       position: fixed;
@@ -105,7 +104,6 @@
       }
     }
 
-    /* Page Transitions */
     .view-container {
       width: 100%;
       transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -120,7 +118,7 @@
 
     .container {
       width: 100%;
-      max-width: 450px;
+      max-width: 380px;
       position: relative;
     }
 
@@ -149,7 +147,6 @@
       letter-spacing: 0.2em;
     }
 
-    /* Antigravity Cards */
     .card {
       background: var(--card-bg);
       backdrop-filter: blur(20px);
@@ -239,7 +236,6 @@
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
 
-    /* Buttons */
     .btn {
       width: 100%;
       padding: 10px 14px;
@@ -285,7 +281,7 @@
       transform: translateY(-2px);
     }
 
-    /* Team Info */
+   
     .team-info {
       background: #ffffff;
       border: 1px solid #e2e8f0;
@@ -317,7 +313,6 @@
       font-weight: 600;
     }
 
-    /* Loading Overlay */
     .loading-overlay {
       position: fixed;
       inset: 0;
@@ -446,6 +441,10 @@
     }
 
     @media (max-width: 600px) {
+      .container {
+        max-width: 320px;
+      }
+
       body {
         padding: 10px 6px;
       }
@@ -564,7 +563,7 @@
       <p>Council Administration Panel</p>
     </div>
 
-    <!-- LOGIN CARD -->
+  
     <div id="loginCard" class="view-container">
       <div class="card">
         <h2>Council Login</h2>
@@ -593,10 +592,8 @@
       </div>
     </div>
 
-    <!-- ADMIN PANEL -->
     <div id="adminPanel" class="view-container v-hide">
 
-      <!-- Team Search Card -->
       <div class="card">
         <h2>Find Team</h2>
 
@@ -615,10 +612,9 @@
         </button>
       </div>
 
-      <!-- Team Details & Update Card -->
+   
       <div id="teamDetailsCard" class="card hidden">
 
-        <!-- Team Info Display -->
         <div class="team-info">
           <h3>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -640,7 +636,6 @@
 
         <div class="divider"></div>
 
-        <!-- Status Selection -->
         <div class="form-group">
           <label for="statusSelect">Update Status</label>
           <select id="statusSelect" onchange="updateStatusUI()">
@@ -651,7 +646,7 @@
           </select>
         </div>
 
-        <!-- Schedule Section -->
+     
         <div id="scheduleSection" class="collapsible-section hidden">
           <div class="section-header">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -683,7 +678,7 @@
           </div>
         </div>
 
-        <!-- Result Section -->
+
         <div id="resultSection" class="collapsible-section hidden">
           <div class="section-header">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -733,7 +728,6 @@
     const API = window.location.origin;
     let currentRow = null;
 
-    // ---------------- UI HELPERS ----------------
     function showLoading() {
       document.getElementById("loadingOverlay").classList.add("active");
     }
@@ -757,7 +751,7 @@
     }
 
 
-    // ---------------- LOGIN ----------------
+  
     async function login() {
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value;
@@ -789,7 +783,6 @@
       }
     }
 
-    // ---------------- FETCH TEAM ----------------
     async function loadTeam() {
       const teamNo = document.getElementById("teamNoInput").value.trim();
       if (!teamNo) {
@@ -817,7 +810,7 @@
         updateStatusUI();
         document.getElementById("successMessage").style.display = "none";
       } catch (error) {
-        // Test mode fallback
+     
         if (confirm("Backend not available. Use test data for Team " + teamNo + "?")) {
           currentRow = parseInt(teamNo) + 1;
           document.getElementById("displayTeamNo").textContent = teamNo;
@@ -833,7 +826,7 @@
       }
     }
 
-    // ---------------- UPDATE STATUS UI ----------------
+
     function updateStatusUI() {
       const status = document.getElementById("statusSelect").value;
       const scheduleSection = document.getElementById("scheduleSection");
@@ -852,7 +845,6 @@
       }
     }
 
-    // ---------------- SAVE ----------------
     async function save() {
       const status = document.getElementById("statusSelect").value;
       let opponent = "", courtVal = "", timeVal = "", scoreVal = "", resultVal = "";
@@ -895,7 +887,6 @@
       }
     }
 
-    // Enter key listeners
     document.getElementById("password")?.addEventListener("keypress", (e) => e.key === "Enter" && login());
     document.getElementById("teamNoInput")?.addEventListener("keypress", (e) => e.key === "Enter" && loadTeam());
 
