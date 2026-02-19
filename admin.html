@@ -43,8 +43,19 @@
       color: var(--text-main);
       overflow-x: hidden;
       display: flex;
+      align-items: center;
+      /* Initial alignment */
       justify-content: center;
-      padding: 40px 20px;
+      padding: 20px;
+      padding-bottom: 40vh;
+      /* Push content higher from center to match admin view */
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    body.top-aligned {
+      align-items: flex-start;
+      padding-top: 40px;
+      padding-bottom: 20px;
     }
 
     body::before {
@@ -281,7 +292,7 @@
       transform: translateY(-2px);
     }
 
-   
+
     .team-info {
       background: #ffffff;
       border: 1px solid #e2e8f0;
@@ -442,103 +453,101 @@
 
     @media (max-width: 600px) {
       .container {
-        max-width: 320px;
+        max-width: 95%;
+        /* Increased from 320px to allow more space */
       }
 
       body {
-        padding: 10px 6px;
-      }
-
-      .header {
-        margin-bottom: 15px;
+        padding: 10px 8px;
       }
 
       .header h1 {
-        font-size: 1.75rem;
-      }
-
-      .header p {
-        font-size: 0.7rem;
-        letter-spacing: 0.1em;
+        font-size: 2.1rem;
+        /* Larger mobile header */
       }
 
       .card {
-        padding: 12px 10px;
-        border-radius: 12px;
-        margin-bottom: 10px;
+        padding: 16px 12px;
+        border-radius: 16px;
       }
 
       h2 {
-        font-size: 1.1rem;
-        margin-bottom: 12px;
-        gap: 8px;
+        font-size: 1.4rem;
+        /* Larger mobile subtitle */
       }
 
-      h2::before {
-        height: 12px;
-        width: 3px;
-      }
-
-      .form-group {
-        margin-bottom: 8px;
-      }
-
-      .form-group label {
-        font-size: 0.58rem;
-        margin-bottom: 4px;
-      }
-
-      .form-group input,
-      .form-group select {
-        padding: 6px 10px;
-        font-size: 0.8rem;
-        border-radius: 6px;
-      }
-
-      .btn {
-        padding: 10px;
+      /* Ensure large-controls stay large on mobile */
+      .large-controls .form-group label {
         font-size: 0.85rem;
-        border-radius: 6px;
       }
 
-      .team-info {
-        padding: 10px;
-        margin: 10px 0;
-        border-radius: 10px;
+      .large-controls .form-group input,
+      .large-controls .form-group select {
+        padding: 12px 18px;
+        font-size: 1.05rem;
       }
 
-      .team-info h3 {
+      .large-controls .btn {
+        padding: 12px 18px;
+        font-size: 1.1rem;
+      }
+
+      .large-controls .team-info h3 {
+        font-size: 1.25rem;
+      }
+
+      .large-controls .player-row {
         font-size: 0.95rem;
-        margin-bottom: 8px;
-      }
-
-      .player-row {
-        margin: 5px 0;
-        font-size: 0.78rem;
-        padding-bottom: 5px;
-      }
-
-      .divider {
-        margin: 10px 0;
-      }
-
-      .collapsible-section {
-        border-radius: 10px;
-        margin-top: 10px;
-      }
-
-      .section-header {
-        padding: 8px 12px;
-        font-size: 0.8rem;
-      }
-
-      .section-content {
-        padding: 10px;
       }
 
       .grid-2 {
         grid-template-columns: 1fr;
+        gap: 8px;
       }
+    }
+
+    /* Larger Controls Styles */
+    .large-controls .form-group label {
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+    }
+
+    .large-controls .form-group input,
+    .large-controls .form-group select {
+      padding: 12px 20px;
+      font-size: 1.1rem;
+    }
+
+    .large-controls .btn {
+      padding: 14px 20px;
+      font-size: 1.15rem;
+    }
+
+    .large-controls .team-info h3 {
+      font-size: 1.4rem;
+    }
+
+    .large-controls .player-row {
+      font-size: 1rem;
+      padding: 8px 0;
+    }
+
+    /* Spacing Optimization */
+    .large-controls .form-group {
+      margin-bottom: 8px;
+    }
+
+    .large-controls .section-content {
+      padding: 6px 16px;
+    }
+
+    .large-controls.card {
+      padding: 10px 20px;
+    }
+
+    .large-controls .grid-2 {
+      gap: 12px;
+      margin-top: -4px;
     }
   </style>
 </head>
@@ -563,9 +572,9 @@
       <p>Council Administration Panel</p>
     </div>
 
-  
+
     <div id="loginCard" class="view-container">
-      <div class="card">
+      <div class="card large-controls">
         <h2>Council Login</h2>
 
         <div class="form-group">
@@ -588,13 +597,12 @@
           </svg>
         </button>
 
-
       </div>
     </div>
 
     <div id="adminPanel" class="view-container v-hide">
 
-      <div class="card">
+      <div class="card large-controls">
         <h2>Find Team</h2>
 
         <div class="form-group">
@@ -612,8 +620,8 @@
         </button>
       </div>
 
-   
-      <div id="teamDetailsCard" class="card hidden">
+
+      <div id="teamDetailsCard" class="card hidden large-controls">
 
         <div class="team-info">
           <h3>
@@ -646,7 +654,7 @@
           </select>
         </div>
 
-     
+
         <div id="scheduleSection" class="collapsible-section hidden">
           <div class="section-header">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -672,7 +680,7 @@
 
               <div class="form-group">
                 <label for="timeInput">Time</label>
-                <input id="timeInput" type="time">
+                <input id="timeInput" type="text" placeholder="e.g., 10:30 AM">
               </div>
             </div>
           </div>
@@ -741,6 +749,7 @@
       const admin = document.getElementById("adminPanel");
 
       if (toId === "adminPanel") {
+        document.body.classList.add("is-admin");
         login.classList.add("v-hide");
         setTimeout(() => {
           login.classList.add("hidden");
@@ -751,7 +760,7 @@
     }
 
 
-  
+
     async function login() {
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value;
@@ -801,6 +810,7 @@
           return;
         }
 
+        document.body.classList.add("top-aligned");
         currentRow = parseInt(teamNo) + 1;
         document.getElementById("displayTeamNo").textContent = teamNo;
         document.getElementById("p1Display").textContent = teamData[1] || "N/A";
@@ -810,8 +820,9 @@
         updateStatusUI();
         document.getElementById("successMessage").style.display = "none";
       } catch (error) {
-     
+
         if (confirm("Backend not available. Use test data for Team " + teamNo + "?")) {
+          document.body.classList.add("top-aligned");
           currentRow = parseInt(teamNo) + 1;
           document.getElementById("displayTeamNo").textContent = teamNo;
           document.getElementById("p1Display").textContent = "Player " + (teamNo * 2 - 1);
